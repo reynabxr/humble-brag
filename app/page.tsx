@@ -9,7 +9,7 @@ import { ResultView } from "@/components/result-view";
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
 
-export type StyleMode = "blockbuster" | "mvp" | null;
+export type StyleMode = "movie" | "sports" | null;
 
 export default function Home() {
   const [postText, setPostText] = useState("");

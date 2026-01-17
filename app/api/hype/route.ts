@@ -62,16 +62,20 @@ export async function POST(request: Request) {
     const webhookUrl = process.env.HYPE_WEBHOOK_URL;
     
     if (webhookUrl) {
-      const webhookResponse = await fetch(webhookUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(webhookPayload),
-      });
+      try {
+        const webhookResponse = await fetch(webhookUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(webhookPayload),
+        });
 
-      if (!webhookResponse.ok) {
-        throw new Error("Failed to trigger webhook");
+        if (!webhookResponse.ok) {
+          console.warn(`Webhook returned status ${webhookResponse.status}`);
+        }
+      } catch (webhookError) {
+        console.warn("Webhook call failed:", webhookError);
       }
     }
 
