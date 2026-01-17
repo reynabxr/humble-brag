@@ -16,6 +16,7 @@ export async function POST(req: Request) {
     });
 
     const statusData = await statusResponse.json();
+    console.log("Full Sora response:", JSON.stringify(statusData, null, 2));
 
     if (statusData.status === "completed") {
       // Download and upload to Supabase
@@ -43,7 +44,8 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      status: statusData.status // "queued" or "in_progress"
+      status: statusData.status, // "queued" or "in_progress"
+      full_response: statusData
     });
 
   } catch (error: any) {
