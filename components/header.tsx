@@ -1,5 +1,5 @@
-import { User } from "lucide-react"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { User } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export function Header() {
   return (
@@ -9,7 +9,7 @@ export function Header() {
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-bold text-linkedin-blue">HumbleBrag</h1>
             <span className="text-sm text-muted-foreground hidden sm:inline">
-              Make your career update a blockbuster.
+              Make your career update a movie.
             </span>
           </div>
 
@@ -21,5 +21,5 @@ export function Header() {
         </div>
       </div>
     </header>
-  )
+  );
 }

@@ -1,55 +1,67 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { Clapperboard, Trophy } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
-import { cn } from "@/lib/utils"
-import type { StyleMode } from "@/app/page"
+import { Clapperboard, Trophy } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import type { StyleMode } from "@/app/page";
 
 interface StyleSelectorProps {
-  selectedStyle: StyleMode
-  onStyleSelect: (style: StyleMode) => void
+  selectedStyle: StyleMode;
+  onStyleSelect: (style: StyleMode) => void;
 }
 
-export function StyleSelector({ selectedStyle, onStyleSelect }: StyleSelectorProps) {
+export function StyleSelector({
+  selectedStyle,
+  onStyleSelect,
+}: StyleSelectorProps) {
   return (
     <div className="space-y-3">
-      <h2 className="text-sm font-medium text-foreground">Choose your hype style</h2>
+      <h2 className="text-sm font-medium text-foreground">
+        Choose your hype style
+      </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <StyleCard
-          title="The Blockbuster"
+          title="The movie"
           description="Hans Zimmer style. Epic. Suspenseful."
           icon={<Clapperboard className="h-8 w-8" />}
-          isSelected={selectedStyle === "blockbuster"}
-          onClick={() => onStyleSelect("blockbuster")}
+          isSelected={selectedStyle === "movie"}
+          onClick={() => onStyleSelect("movie")}
           accentColor="movie"
         />
 
         <StyleCard
-          title="The MVP"
+          title="The sports"
           description="High-octane sports commentary. The crowd goes wild."
           icon={<Trophy className="h-8 w-8" />}
-          isSelected={selectedStyle === "mvp"}
-          onClick={() => onStyleSelect("mvp")}
+          isSelected={selectedStyle === "sports"}
+          onClick={() => onStyleSelect("sports")}
           accentColor="sports"
         />
       </div>
     </div>
-  )
+  );
 }
 
 interface StyleCardProps {
-  title: string
-  description: string
-  icon: React.ReactNode
-  isSelected: boolean
-  onClick: () => void
-  accentColor: "movie" | "sports"
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  isSelected: boolean;
+  onClick: () => void;
+  accentColor: "movie" | "sports";
 }
 
-function StyleCard({ title, description, icon, isSelected, onClick, accentColor }: StyleCardProps) {
+function StyleCard({
+  title,
+  description,
+  icon,
+  isSelected,
+  onClick,
+  accentColor,
+}: StyleCardProps) {
   return (
     <Card
       onClick={onClick}
@@ -69,8 +81,12 @@ function StyleCard({ title, description, icon, isSelected, onClick, accentColor 
           <div
             className={cn(
               "p-3 rounded-lg transition-colors",
-              isSelected && accentColor === "movie" && "bg-movie-gold/20 text-movie-gold",
-              isSelected && accentColor === "sports" && "bg-sports-green/20 text-sports-green",
+              isSelected &&
+                accentColor === "movie" &&
+                "bg-movie-gold/20 text-movie-gold",
+              isSelected &&
+                accentColor === "sports" &&
+                "bg-sports-green/20 text-sports-green",
               !isSelected && "bg-muted text-muted-foreground",
             )}
           >
@@ -88,10 +104,17 @@ function StyleCard({ title, description, icon, isSelected, onClick, accentColor 
             >
               {title}
             </h3>
-            <p className={cn("text-sm mt-1", isSelected ? "text-white/70" : "text-muted-foreground")}>{description}</p>
+            <p
+              className={cn(
+                "text-sm mt-1",
+                isSelected ? "text-white/70" : "text-muted-foreground",
+              )}
+            >
+              {description}
+            </p>
           </div>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

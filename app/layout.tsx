@@ -8,7 +8,7 @@ const _inter = Inter({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "HumbleBrag - Turn LinkedIn Posts into Blockbusters",
+  title: "HumbleBrag - Turn LinkedIn Posts into movies",
   description:
     "Transform your boring corporate updates into cinematic masterpieces with AI-powered video generation.",
   icons: {
