@@ -1,62 +1,87 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Header } from "@/components/header"
-import { PostInput } from "@/components/post-input"
-import { StyleSelector } from "@/components/style-selector"
-import { LoadingScreen } from "@/components/loading-screen"
-import { ResultView } from "@/components/result-view"
-import { Button } from "@/components/ui/button"
-import { Sparkles } from "lucide-react"
+import { useState } from "react";
+import { Header } from "@/components/header";
+import { PostInput } from "@/components/post-input";
+import { StyleSelector } from "@/components/style-selector";
+import { LoadingScreen } from "@/components/loading-screen";
+import { ResultView } from "@/components/result-view";
+import { Button } from "@/components/ui/button";
+import { Sparkles } from "lucide-react";
 
-export type StyleMode = "blockbuster" | "mvp" | null
+export type StyleMode = "blockbuster" | "mvp" | null;
 
 export default function Home() {
-  const [postText, setPostText] = useState("")
-  const [imageFile, setImageFile] = useState<File | null>(null)
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [selectedStyle, setSelectedStyle] = useState<StyleMode>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [showResult, setShowResult] = useState(false)
+  const [postText, setPostText] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [selectedStyle, setSelectedStyle] = useState<StyleMode>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showResult, setShowResult] = useState(false);
 
   const handleImageUpload = (file: File) => {
-    setImageFile(file)
-    const reader = new FileReader()
+    setImageFile(file);
+    const reader = new FileReader();
     reader.onloadend = () => {
-      setImagePreview(reader.result as string)
-    }
-    reader.readAsDataURL(file)
-  }
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleRemoveImage = () => {
-    setImageFile(null)
-    setImagePreview(null)
-  }
+    setImageFile(null);
+    setImagePreview(null);
+  };
 
-  const handleHypePost = () => {
-    setIsLoading(true)
-    setTimeout(() => {
-      setIsLoading(false)
-      setShowResult(true)
-    }, 3000)
-  }
+  const handleHypePost = async () => {
+    if (!selectedStyle) return;
+
+    setIsLoading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("postText", postText);
+      formData.append("style", selectedStyle);
+
+      if (imageFile) {
+        formData.append("image", imageFile);
+      }
+
+      const response = await fetch("/api/hype", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to process request");
+      }
+
+      // Success!
+      setShowResult(true);
+    } catch (error) {
+      console.error("Error hyping post:", error);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleStartOver = () => {
-    setPostText("")
-    setImageFile(null)
-    setImagePreview(null)
-    setSelectedStyle(null)
-    setShowResult(false)
-  }
+    setPostText("");
+    setImageFile(null);
+    setImagePreview(null);
+    setSelectedStyle(null);
+    setShowResult(false);
+  };
 
-  const isButtonDisabled = !postText.trim() || !selectedStyle
+  const isButtonDisabled = !postText.trim() || !selectedStyle;
 
   if (isLoading) {
-    return <LoadingScreen mode={selectedStyle} />
+    return <LoadingScreen mode={selectedStyle} />;
   }
 
   if (showResult) {
-    return <ResultView mode={selectedStyle} onStartOver={handleStartOver} />
+    return <ResultView mode={selectedStyle} onStartOver={handleStartOver} />;
   }
 
   return (
@@ -73,7 +98,10 @@ export default function Home() {
             onRemoveImage={handleRemoveImage}
           />
 
-          <StyleSelector selectedStyle={selectedStyle} onStyleSelect={setSelectedStyle} />
+          <StyleSelector
+            selectedStyle={selectedStyle}
+            onStyleSelect={setSelectedStyle}
+          />
 
           <Button
             onClick={handleHypePost}
@@ -86,5 +114,5 @@ export default function Home() {
         </div>
       </main>
     </div>
-  )
+  );
 }
