@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
-import OpenAI from "openai";
-import fs from "fs";
-import path from "path";
-import os from "os";
+import OpenAI, { toFile } from "openai";
+import sharp from "sharp";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -24,47 +22,29 @@ export async function POST(req: Request) {
 
     const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
     
-    // Determine file extension and MIME type
-    const contentType = imageResponse.headers.get("content-type") || "image/jpeg";
-    let ext = ".jpg";
-    let mimeType = "image/jpeg";
-    
-    if (contentType.includes("png")) {
-      ext = ".png";
-      mimeType = "image/png";
-    } else if (contentType.includes("webp")) {
-      ext = ".webp";
-      mimeType = "image/webp";
-    } else if (contentType.includes("jpeg") || contentType.includes("jpg")) {
-      ext = ".jpg";
-      mimeType = "image/jpeg";
-    }
-    
-    // Save to temp file with proper extension
-    const tempPath = path.join(os.tmpdir(), `${jobId}_input${ext}`);
-    fs.writeFileSync(tempPath, imageBuffer);
+    // Resize image to match video dimensions (1280x720)
+    const resizedBuffer = await sharp(imageBuffer)
+      .resize(1280, 720, {
+        fit: 'cover',  // Crop to fill the dimensions
+        position: 'center'
+      })
+      .jpeg({ quality: 90 })
+      .toBuffer();
 
-    // Use OpenAI SDK with input_reference - create a File-like object with proper type
-    const file = await OpenAI.toFile(
-      fs.createReadStream(tempPath),
-      `input${ext}`,
-      { type: mimeType }
-    );
+    // Convert to File with correct mimetype
+    const imageFile = await toFile(resizedBuffer, "input.jpg", { type: "image/jpeg" });
 
-    // Use OpenAI SDK with input_reference
+    // Create video with Sora
     const video = await openai.videos.create({
       model: "sora-2",
       prompt: prompt,
-      // @ts-ignore - size, seconds, and input_reference may not be in types yet
+      // @ts-ignore
       size: "1280x720",
       // @ts-ignore
-      seconds: 12,
+      seconds: 8,
       // @ts-ignore
-      input_reference: file,
+      input_reference: imageFile,
     });
-
-    // Cleanup temp file
-    try { fs.unlinkSync(tempPath); } catch (e) {}
 
     return NextResponse.json({
       success: true,
