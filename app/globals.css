@@ -44,8 +44,8 @@
   --linkedin-border: #e0dfdc;
   --movie-gold: #d4af37;
   --movie-dark: #0d0d0d;
-  --sports-green: #39ff14;
-  --sports-dark: #0a1f0a;
+  --sports-accent: #0a66c2;
+  --sports-light: #e7f3ff;
 }
 
 .dark {
@@ -129,8 +129,8 @@
   --color-linkedin-border: var(--linkedin-border);
   --color-movie-gold: var(--movie-gold);
   --color-movie-dark: var(--movie-dark);
-  --color-sports-green: var(--sports-green);
-  --color-sports-dark: var(--sports-dark);
+  --color-sports-accent: var(--sports-accent);
+  --color-sports-light: var(--sports-light);
 }
 
 @layer base {
