@@ -48,8 +48,7 @@ async function processDisneyImageInBackground(
   try {
     console.log(`[${jobId}] Starting Disney image generation...`);
 
-    // Step 1: Fetch image from Supabase
-    console.log(`[${jobId}] Fetching image from Supabase...`);
+    // Step 1: Fetch image
     const imageResponse = await fetch(imageUrl, {
       headers: {
         "Authorization": `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
@@ -62,11 +61,9 @@ async function processDisneyImageInBackground(
 
     const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
     const base64Image = imageBuffer.toString("base64");
-
-    // Determine image type from URL or default to jpeg
     const imageType = imageUrl.includes("png") ? "image/png" : "image/jpeg";
 
-    // Step 2: Vision describe using base64
+    // Step 2: Vision describe
     console.log(`[${jobId}] Analyzing image with GPT-4o vision...`);
     const visionResponse = await openai.chat.completions.create({
       model: "gpt-4o",
@@ -76,7 +73,7 @@ async function processDisneyImageInBackground(
           content: [
             {
               type: "text",
-              text: "Describe this person's facial features, age, gender, ethnicity, hair, hair colour, hair style, eye colour and clothing for exact recreation."
+              text: "Describe this person's facial features, age, gender, ethnicity, hair, hair colour, hair style, eye colour and clothing for exact recreation in a Disney Pixar style."
             },
             {
               type: "image_url",
@@ -92,14 +89,14 @@ async function processDisneyImageInBackground(
     const personDesc = visionResponse.choices[0].message.content;
     console.log(`[${jobId}] Person description: ${personDesc}`);
 
-    // Step 3: Generate Disney Pixar style image with DALL-E-3
+    // Step 3: Generate Disney Pixar style image - LANDSCAPE
     console.log(`[${jobId}] Generating Disney Pixar image with DALL-E-3...`);
-    const prompt = `Disney Pixar 3D character of ${personDesc}. Preserve ethnicity, age, gender. Smooth shading, expressive eyes, vibrant colors, clean background, high quality. Do not put any text in the image.`;
+    const prompt = `Disney Pixar 3D character of ${personDesc}. Full body shot, standing heroically in an action pose. Preserve ethnicity, age, gender. Smooth shading, expressive eyes, vibrant colors, clean cinematic background, high quality, landscape orientation, centered character. Do not put any text in the image.`;
 
     const dalleResponse = await openai.images.generate({
       model: "dall-e-3",
       prompt: prompt,
-      size: "1024x1792",
+      size: "1792x1024",  // Landscape orientation
       quality: "hd",
       n: 1
     });
@@ -109,25 +106,20 @@ async function processDisneyImageInBackground(
     }
 
     const generatedImageUrl = dalleResponse.data[0].url;
-    console.log(`[${jobId}] Image generated: ${generatedImageUrl}`);
 
-    // Step 4: Download generated image
-    console.log(`[${jobId}] Downloading generated image...`);
+    // Step 4: Download and resize to exact 1280x720
     const generatedImageResponse = await fetch(generatedImageUrl);
     const generatedImageBuffer = Buffer.from(await generatedImageResponse.arrayBuffer());
 
-    // Step 4.5: Resize image to 720x1280
-    console.log(`[${jobId}] Resizing image to 720x1280...`);
     const resizedImageBuffer = await sharp(generatedImageBuffer)
-      .resize(720, 1280, {
+      .resize(1280, 720, {
         fit: "cover",
         position: "center"
       })
       .png()
       .toBuffer();
 
-    // Step 5: Upload to Supabase "disney" bucket
-    console.log(`[${jobId}] Uploading to Supabase disney bucket...`);
+    // Step 5: Upload to Supabase
     const fileName = `${jobId}.png`;
 
     const { error: uploadError } = await supabase.storage
@@ -141,13 +133,11 @@ async function processDisneyImageInBackground(
       throw new Error(`Upload failed: ${uploadError.message}`);
     }
 
-    // Step 6: Get public URL
     const { data: urlData } = supabase.storage
       .from("disney")
       .getPublicUrl(fileName);
 
-    const publicUrl = urlData.publicUrl;
-    console.log(`[${jobId}] Disney image ready: ${publicUrl}`);
+    console.log(`[${jobId}] Disney image ready: ${urlData.publicUrl}`);
 
   } catch (error: any) {
     console.error(`[${jobId}] Error:`, error.message);

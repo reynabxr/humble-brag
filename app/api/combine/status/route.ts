@@ -15,12 +15,12 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "jobId required" }, { status: 400 });
     }
 
-    const fileName = `${jobId}.png`;
+    const fileName = `final/${jobId}.mp4`;
 
-    // Check if file exists
+    // Check if combined video exists
     const { data, error } = await supabase.storage
-      .from("disney")
-      .list("", { 
+      .from("hype-videos")
+      .list("final", { 
         limit: 100,
         search: jobId 
       });
@@ -29,17 +29,17 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    const fileExists = data?.some(f => f.name === fileName);
+    const fileExists = data?.some(f => f.name === `${jobId}.mp4`);
 
     if (fileExists) {
       const { data: urlData } = supabase.storage
-        .from("disney")
+        .from("hype-videos")
         .getPublicUrl(fileName);
 
       return NextResponse.json({
         status: "completed",
         job_id: jobId,
-        disney_image_url: urlData.publicUrl
+        video_url: urlData.publicUrl
       });
     }
 

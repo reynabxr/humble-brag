@@ -16,16 +16,16 @@ export async function POST(req: Request) {
     });
 
     const statusData = await statusResponse.json();
-    console.log("Full Sora response:", JSON.stringify(statusData, null, 2));
+    console.log(`[${jobId}] Sora status:`, statusData.status);
 
     if (statusData.status === "completed") {
-      // Download and upload to Supabase
+      // Download video
       const downloadResponse = await fetch(`https://api.openai.com/v1/videos/${soraJobId}/content`, {
         headers: { "Authorization": `Bearer ${process.env.OPENAI_API_KEY}` }
       });
 
       const videoBuffer = Buffer.from(await downloadResponse.arrayBuffer());
-      const fileName = `videos/${jobId}.mp4`;
+      const fileName = `scenes/${jobId}.mp4`;
 
       await supabase.storage
         .from("hype-videos")
@@ -38,14 +38,24 @@ export async function POST(req: Request) {
       return NextResponse.json({
         success: true,
         status: "completed",
+        job_id: jobId,
         video_url: urlData.publicUrl
+      });
+    }
+
+    if (statusData.status === "failed") {
+      return NextResponse.json({
+        success: false,
+        status: "failed",
+        job_id: jobId,
+        error: statusData.error || "Video generation failed"
       });
     }
 
     return NextResponse.json({
       success: true,
-      status: statusData.status, // "queued" or "in_progress"
-      full_response: statusData
+      status: statusData.status,
+      job_id: jobId
     });
 
   } catch (error: any) {
