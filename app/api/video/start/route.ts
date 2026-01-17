@@ -56,7 +56,7 @@ export async function POST(req: Request) {
       model: "sora-2",
       prompt: prompt,
       // @ts-ignore - size, seconds, and input_reference may not be in types yet
-      size: "1080x1920",
+      size: "1280x720",
       // @ts-ignore
       seconds: 12,
       // @ts-ignore
