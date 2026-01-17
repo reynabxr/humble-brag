@@ -1,8 +1,6 @@
 "use client";
 
 import {
-  Download,
-  Linkedin,
   RotateCcw,
   Play,
   Castle,
@@ -13,6 +11,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+// 1. Import the new component
+import { LinkedInVideoShare } from "@/components/linkedin-video-share";
 import type { StyleMode } from "@/app/page";
 import { cn } from "@/lib/utils";
 
@@ -24,17 +24,28 @@ interface ResultViewProps {
 export function ResultView({ mode, onStartOver }: ResultViewProps) {
   const isMovie = mode === "movie";
 
+  // Use local fallback video from public folder
+  const videoUrl = "/humblebrag.mp4";
+
+  // 3. Dynamic captions based on the theme
+  const shareCaption = isMovie
+    ? "Just turned my career journey into a fairytale! 🏰✨ Created with the HumbleBrag AI. #Storytelling #DreamBig #DisneyStyle"
+    : "Here are the highlights from my latest season. 🏆📈 Stats don't lie. Generated with HumbleBrag. #ProfessionalGrowth #Wins #HighlightReel";
+
   return (
-    <div className="min-h-screen py-8 bg-linkedin-gray">
+    <div className="min-h-screen py-8 bg-[#F3F2EF]">
+      {" "}
+      {/* Used LinkedIn Gray hex directly for safety */}
       <div className="container mx-auto max-w-3xl px-4">
+        {/* Header Card */}
         <Card className="mb-6 p-6 border-none shadow-sm bg-white">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-linkedin-blue rounded flex items-center justify-center">
+            <div className="w-10 h-10 bg-[#0a66c2] rounded flex items-center justify-center">
               <span className="text-white font-bold">in</span>
             </div>
             <div>
-              <p className="font-semibold text-foreground">HumbleBrag</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="font-semibold text-gray-900">HumbleBrag</p>
+              <p className="text-sm text-gray-500">
                 Your content is ready to share
               </p>
             </div>
@@ -42,35 +53,35 @@ export function ResultView({ mode, onStartOver }: ResultViewProps) {
 
           <div
             className={cn(
-              "rounded-lg p-4 text-center",
+              "rounded-lg p-4 text-center border",
               isMovie
-                ? "bg-linear-to-r from-amber-50 via-yellow-50 to-amber-50 border border-movie-gold/30"
-                : "bg-linear-to-r from-blue-50 via-sky-50 to-blue-50 border border-linkedin-blue/30",
+                ? "bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-50 border-amber-200"
+                : "bg-gradient-to-r from-blue-50 via-sky-50 to-blue-50 border-blue-200",
             )}
           >
             <div className="flex items-center justify-center gap-2 mb-2">
               {isMovie ? (
                 <>
-                  <Sparkles className="h-6 w-6 text-movie-gold" />
+                  <Sparkles className="h-6 w-6 text-amber-500" />
                   <h1 className="text-2xl sm:text-3xl font-bold text-amber-700">
                     Your Disney Story is Complete!
                   </h1>
-                  <Castle className="h-6 w-6 text-movie-gold" />
+                  <Castle className="h-6 w-6 text-amber-500" />
                 </>
               ) : (
                 <>
-                  <Trophy className="h-6 w-6 text-linkedin-blue" />
-                  <h1 className="text-2xl sm:text-3xl font-bold text-linkedin-blue">
+                  <Trophy className="h-6 w-6 text-[#0a66c2]" />
+                  <h1 className="text-2xl sm:text-3xl font-bold text-[#0a66c2]">
                     Your Highlight Reel is Ready!
                   </h1>
-                  <Medal className="h-6 w-6 text-linkedin-blue" />
+                  <Medal className="h-6 w-6 text-[#0a66c2]" />
                 </>
               )}
             </div>
             <p
               className={cn(
-                "text-sm",
-                isMovie ? "text-amber-600" : "text-sky-600",
+                "text-sm font-medium",
+                isMovie ? "text-amber-600" : "text-[#0a66c2]",
               )}
             >
               {isMovie
@@ -80,88 +91,35 @@ export function ResultView({ mode, onStartOver }: ResultViewProps) {
           </div>
         </Card>
 
+        {/* Video Preview Card */}
         <Card
           className={cn(
-            "overflow-hidden border-2 shadow-lg bg-white",
-            isMovie ? "border-movie-gold/50" : "border-linkedin-blue/50",
+            "overflow-hidden border-2 shadow-lg bg-white mb-6",
+            isMovie ? "border-amber-200" : "border-blue-200",
           )}
         >
           <CardContent className="p-0">
-            <div
-              className={cn(
-                "relative aspect-video flex items-center justify-center",
-                isMovie
-                  ? "bg-linear-to-br from-amber-100 via-yellow-50 to-orange-100"
-                  : "bg-linear-to-br from-blue-100 via-sky-50 to-cyan-100",
-              )}
+            <video
+              controls
+              className="w-full aspect-video bg-black"
+              src={videoUrl}
             >
-              {isMovie ? (
-                <>
-                  <Sparkles className="absolute top-4 left-4 h-6 w-6 text-movie-gold/40 animate-pulse" />
-                  <Star className="absolute top-8 right-8 h-5 w-5 text-amber-400/50 animate-bounce" />
-                  <Castle className="absolute bottom-4 right-4 h-8 w-8 text-movie-gold/30" />
-                </>
-              ) : (
-                <>
-                  <Trophy className="absolute top-4 left-4 h-6 w-6 text-linkedin-blue/40 animate-pulse" />
-                  <Medal className="absolute top-8 right-8 h-5 w-5 text-sky-400/50 animate-bounce" />
-                  <Star className="absolute bottom-4 right-4 h-8 w-8 text-linkedin-blue/30" />
-                </>
-              )}
-
-              <div className="text-center z-10">
-                <div
-                  className={cn(
-                    "inline-flex items-center justify-center w-20 h-20 rounded-full mb-4 cursor-pointer hover:scale-110 transition-transform shadow-lg",
-                    isMovie
-                      ? "bg-white border-2 border-movie-gold text-movie-gold"
-                      : "bg-white border-2 border-linkedin-blue text-linkedin-blue",
-                  )}
-                >
-                  <Play className="h-10 w-10 ml-1" />
-                </div>
-                <p
-                  className={cn(
-                    "font-medium",
-                    isMovie ? "text-amber-700" : "text-linkedin-blue",
-                  )}
-                >
-                  {isMovie
-                    ? "Watch Your Disney Story"
-                    : "Watch Your Highlight Reel"}
-                </p>
-                <p className="text-muted-foreground text-xs mt-1">
-                  (AI video generation coming soon)
-                </p>
-              </div>
-            </div>
+              Your browser does not support the video tag.
+            </video>
           </CardContent>
         </Card>
 
-        <div className="flex flex-col sm:flex-row gap-3 mt-6">
-          <Button
-            className={cn(
-              "flex-1 h-12 font-semibold shadow-md",
-              isMovie
-                ? "bg-movie-gold hover:bg-amber-600 text-white"
-                : "bg-linkedin-blue hover:bg-linkedin-blue/90 text-white",
-            )}
-          >
-            <Download className="mr-2 h-5 w-5" />
-            Download Video
-          </Button>
-
-          <Button className="flex-1 h-12 font-semibold bg-linkedin-blue hover:bg-linkedin-blue/90 text-white shadow-md">
-            <Linkedin className="mr-2 h-5 w-5" />
-            Post to LinkedIn
-          </Button>
+        {/* 4. THE SMART SHARE SECTION */}
+        {/* We replaced the old buttons with this component */}
+        <div className="mb-8">
+          <LinkedInVideoShare videoUrl={videoUrl} caption={shareCaption} />
         </div>
 
-        <div className="text-center mt-8">
+        <div className="text-center pb-8">
           <Button
             variant="ghost"
             onClick={onStartOver}
-            className="text-muted-foreground hover:text-foreground hover:bg-linkedin-gray"
+            className="text-gray-500 hover:text-gray-900 hover:bg-gray-200"
           >
             <RotateCcw className="mr-2 h-4 w-4" />
             Create Another Masterpiece

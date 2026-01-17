@@ -56,6 +56,9 @@ export default function Home() {
         throw new Error("Failed to process request");
       }
 
+      // Wait for 10 seconds before showing result
+      await new Promise((resolve) => setTimeout(resolve, 10000));
+
       // Success!
       setShowResult(true);
     } catch (error) {
