@@ -24,20 +24,27 @@ export async function POST(req: Request) {
 
     const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
     
-    // Save to temp file (Sora SDK needs a file)
-    const tempPath = path.join(os.tmpdir(), `${jobId}_input.jpg`);
+    // Determine file extension from content type or URL
+    const contentType = imageResponse.headers.get("content-type") || "image/jpeg";
+    let ext = ".jpg";
+    if (contentType.includes("png")) ext = ".png";
+    else if (contentType.includes("webp")) ext = ".webp";
+    else if (contentType.includes("jpeg") || contentType.includes("jpg")) ext = ".jpg";
+    
+    // Save to temp file with proper extension
+    const tempPath = path.join(os.tmpdir(), `${jobId}_input${ext}`);
     fs.writeFileSync(tempPath, imageBuffer);
 
-    // Use OpenAI SDK with input_reference (like your Python code)
+    // Use OpenAI SDK with input_reference
     const video = await openai.videos.create({
       model: "sora-2",
       prompt: prompt,
       // @ts-ignore - size, seconds, and input_reference may not be in types yet
       size: "1080x1920",
       // @ts-ignore
-      seconds: 8,
+      seconds: 20,
       // @ts-ignore
-      input_reference: fs.createReadStream(tempPath),
+      input_reference: await OpenAI.toFile(fs.createReadStream(tempPath), path.basename(tempPath)),
     });
 
     // Cleanup temp file
