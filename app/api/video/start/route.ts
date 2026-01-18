@@ -19,14 +19,11 @@ export async function POST(req: Request) {
     let videoParams: any = {
       model: "sora",
       prompt: prompt,
-      size: "1280x720",
-      duration: videoDuration,
     };
 
     // Only process image if imageUrl is provided
     if (imageUrl && imageUrl.trim() !== '') {
       try {
-        // Download image
         const imageResponse = await fetch(imageUrl);
         if (!imageResponse.ok) {
           throw new Error(`Failed to fetch image: ${imageResponse.statusText}`);
@@ -34,7 +31,6 @@ export async function POST(req: Request) {
 
         const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
         
-        // Ensure image is 1280x720 landscape
         const resizedBuffer = await sharp(imageBuffer)
           .resize(1280, 720, {
             fit: 'cover',
@@ -43,14 +39,11 @@ export async function POST(req: Request) {
           .jpeg({ quality: 90 })
           .toBuffer();
 
-        // Convert to File
         const imageFile = await toFile(resizedBuffer, "input.jpg", { type: "image/jpeg" });
         
-        // Add image reference to params
         videoParams.image = imageFile;
       } catch (imageError: any) {
         console.warn("Image processing failed, continuing without image:", imageError.message);
-        // Continue without image - text-to-video only
       }
     }
 
