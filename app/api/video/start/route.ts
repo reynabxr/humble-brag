@@ -10,8 +10,8 @@ export async function POST(req: Request) {
   try {
     const { imageUrl, prompt, jobId, duration } = await req.json();
 
-    if (!imageUrl || !prompt) {
-      return NextResponse.json({ error: "imageUrl and prompt required" }, { status: 400 });
+    if (!prompt) {
+      return NextResponse.json({ error: "prompt required" }, { status: 400 });
     }
 
     // Default duration is 8 seconds
