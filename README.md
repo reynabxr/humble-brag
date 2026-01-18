@@ -4,12 +4,7 @@ Ever thought that your **LinkedIn post needed some toning down**? Felt like you 
 
 Paste in your post, upload a head shot of yourself, and HumbleBrag will generate a video that will give your post that **sorely-needed touch of humility**!
 
-Here is our Demo Video (Click to view):
-<p align="center">
-  <a href="https://www.youtube.com/watch?v=VJjYewS4Eio">
-    <img src="https://img.youtube.com/vi/VJjYewS4Eio/0.jpg" alt="Video Title" width="720">
-  </a>
-</p>
+Here is our [demo video](https://youtube.com/shorts/9LP-JW9W_7U)
 
 ## ✨ Key Features
 
