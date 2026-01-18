@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     const videoDuration = duration || 8;
 
     let videoParams: any = {
-      model: "sora",
+      model: "sora-2",
       prompt: prompt,
     };
 
