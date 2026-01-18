@@ -28,11 +28,11 @@ export async function POST(req: Request) {
       const fileName = `scenes/${jobId}.mp4`;
 
       await supabase.storage
-        .from("hype-videos")
+        .from("hype-images")
         .upload(fileName, videoBuffer, { contentType: "video/mp4", upsert: true });
 
       const { data: urlData } = supabase.storage
-        .from("hype-videos")
+        .from("hype-images")
         .getPublicUrl(fileName);
 
       return NextResponse.json({
